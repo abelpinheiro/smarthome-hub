@@ -1,0 +1,33 @@
+# Broker access control list — principle of least privilege.
+#
+# Threat model: assume ONE device will be compromised (stale firmware, key
+# extracted from flash, unit stolen from the garden). The ACL keeps the blast
+# radius inside that device: it cannot forge someone else's telemetry, cannot
+# issue commands, and cannot read the household's traffic.
+#
+# %u is replaced with the username, %c with the client id.
+
+# --- Hub ----------------------------------------------------------------------
+# The hub is the only principal with broad access: it subscribes to all
+# telemetry and is the sole publisher of commands, which is what guarantees the
+# arbitration and failsafe rules from ADR-0006 cannot be bypassed.
+user smarthome-hub
+topic readwrite home/#
+topic read $SYS/broker/uptime
+
+# --- Devices ------------------------------------------------------------------
+# Every device gets its own username in the form dev-{deviceID}. The patterns
+# below are the template applied during provisioning (SH-002).
+#
+# `pattern` expands %u, so a single rule covers all devices without the file
+# growing with each new one.
+
+# A device publishes its telemetry and state — only under its own path.
+pattern write home/+/dev/%u/telemetry
+pattern write home/+/dev/%u/state
+pattern write home/+/dev/%u/cmd/ack
+
+# A device subscribes only to its own commands. It cannot read anyone else's.
+pattern read home/+/dev/%u/cmd
+
+# Note: no rule grants broad read access to any device. That is intentional.

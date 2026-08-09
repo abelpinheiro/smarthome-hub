@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+#
+# Barrier 1 of 2 against secret leakage (ADR-0007).
+# Barrier 2 is GitHub Push Protection, enforced server-side.
+#
+# Why two: this one runs before the commit and can be bypassed with
+# --no-verify. The server-side one cannot. Defense in depth — no single layer
+# is enough.
+#
+# Install with: make hooks
+
+set -euo pipefail
+
+echo "→ pre-commit: scanning for secrets with gitleaks..."
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+	cat >&2 <<-'EOF'
+	✘ gitleaks not found.
+
+	  This repository is PUBLIC. Committing without a secret scan is not
+	  acceptable — a secret that enters the history is public forever, even
+	  if you remove it later.
+
+	  Install with:
+	      go install github.com/zricethezav/gitleaks/v8@latest
+	EOF
+	exit 1
+fi
+
+if ! gitleaks protect --staged --no-banner --redact; then
+	cat >&2 <<-'EOF'
+
+	✘ Possible secret detected in staged files. Commit aborted.
+
+	  If this is a false positive, add an allowlist rule to .gitleaks.toml —
+	  NEVER work around it with --no-verify.
+	EOF
+	exit 1
+fi
+
+echo "→ pre-commit: gofmt..."
+UNFORMATTED=$(gofmt -l . 2>/dev/null | grep -v '^vendor/' || true)
+if [ -n "$UNFORMATTED" ]; then
+	echo "✘ unformatted files:" >&2
+	echo "$UNFORMATTED" >&2
+	echo "  run: gofmt -w ." >&2
+	exit 1
+fi
+
+echo "✔ pre-commit ok"

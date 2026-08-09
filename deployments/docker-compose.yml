@@ -1,0 +1,64 @@
+# Local development environment for smarthome-hub.
+#
+# AppSec: no credential lives in this file. Everything comes from the local
+# .env, which is never versioned. Copy .env.example and generate your own
+# secrets. Run `make setup` before the first `up` to generate the broker
+# password file.
+
+name: smarthome-hub
+
+services:
+  timescaledb:
+    # TODO(SH-002): pin this tag by digest before any real deployment.
+    image: timescale/timescaledb:latest-pg16
+    container_name: smarthome-timescaledb
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-smarthome}
+    ports:
+      # Explicit loopback bind: the database must not be reachable from the LAN.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: smarthome-mosquitto
+    restart: unless-stopped
+    ports:
+      # This one does listen on the LAN — it is where devices connect.
+      # Still, with mandatory authentication and per-device ACLs.
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto/acl:/mosquitto/config/acl:ro
+      - ./mosquitto/passwd:/mosquitto/config/passwd:ro
+      - mosquitto-data:/mosquitto/data
+    environment:
+      MQTT_HUB_USERNAME: ${MQTT_HUB_USERNAME:?set MQTT_HUB_USERNAME in .env}
+      MQTT_HUB_PASSWORD: ${MQTT_HUB_PASSWORD:?set MQTT_HUB_PASSWORD in .env}
+    healthcheck:
+      # Validates the port AND authentication: a broker that starts but rejects
+      # the hub is not healthy.
+      test:
+        - "CMD-SHELL"
+        - >-
+          mosquitto_sub -h 127.0.0.1 -p 1883
+          -u "$${MQTT_HUB_USERNAME}" -P "$${MQTT_HUB_PASSWORD}"
+          -t '$$SYS/broker/uptime' -C 1 -W 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  timescale-data:
+  mosquitto-data:

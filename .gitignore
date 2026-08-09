@@ -1,0 +1,42 @@
+# ==============================================================================
+# SECRETS AND INSTANCE CONFIGURATION (ADR-0007)
+# This repository is public. Nothing below may ever be committed.
+# ==============================================================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+deployments/mosquitto/passwd
+deployments/mosquitto/passwd.*
+
+# Real installation data — telemetry is PRESENCE DATA.
+# An irrigation history reveals exactly when the house was empty.
+data/
+dumps/
+*.dump
+*.sqlite
+backups/
+
+# ==============================================================================
+# Go
+# ==============================================================================
+bin/
+dist/
+*.exe
+*.test
+*.out
+coverage.*
+vendor/
+
+# ==============================================================================
+# Tooling and editors
+# ==============================================================================
+.idea/
+.vscode/
+*.swp
+.DS_Store
+gitleaks-report.json
