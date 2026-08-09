@@ -14,7 +14,7 @@ thinking evolved is as valuable as its current state.
 
 | ADR | Decision | Status |
 |---|---|---|
-| [0001](0001-modular-monolith-in-go.md) | Event-driven modular monolith in Go | 🚧 to write |
+| [0001](0001-modular-monolith-in-go.md) | Event-driven modular monolith in Go | ✅ accepted |
 | [0002](0002-mqtt-device-protocol.md) | MQTT as the device-facing protocol | 🚧 to write |
 | [0003](0003-postgres-timescaledb.md) | PostgreSQL + TimescaleDB as the single store | 🚧 to write |
 | [0004](0004-hybrid-hub-first-topology.md) | Hybrid hub-first topology, cloud as a future module | 🚧 to write |
