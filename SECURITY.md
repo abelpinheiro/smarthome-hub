@@ -21,10 +21,10 @@ The design assumes the following adversaries:
 | Adversary | Assumption | Mitigation |
 |---|---|---|
 | **Compromised device** | One device *will* be compromised — stale firmware, key extracted from flash, unit physically stolen from a garden. | Per-device credentials and per-device broker ACLs. A device may publish only under its own topic path and subscribe only to its own commands. |
-| **Network attacker on the LAN** | Guest Wi-Fi, an IoT device with a known CVE, a neighbour. | Mandatory broker authentication (no anonymous access, ever). Database bound to loopback only. |
-| **Internet attacker** | Automated scanning of residential IPs. | The hub opens **no inbound port**. Any future cloud connectivity is outbound-only, initiated by the hub. Port-forwarding an MQTT broker is explicitly out of scope and will not be supported. |
+| **Network attacker on the LAN** | Guest Wi-Fi, an IoT device with a known CVE, a neighbour. | Mandatory broker authentication (no anonymous access, ever). Database bound to loopback only. **Known gaps, tracked and not yet closed:** the broker listener is still plaintext, so credentials travel in clear in the CONNECT packet (accepted debt with a reversal trigger in ADR-0002, ticket SH-007), and the hub's HTTP API on `:8080` has no authentication yet. Neither is safe to rely on today. |
+| **Internet attacker** | Automated scanning of residential IPs. | **Nothing is reachable from the internet**: no port is forwarded at the router, and the hub never opens a socket outside the LAN. It does listen *on the LAN* — HTTP on `:8080`, broker on `:1883` — so those surfaces belong to the row above, not to this one. Any future cloud connectivity is outbound-only, initiated by the hub. Port-forwarding an MQTT broker is explicitly out of scope and will not be supported. |
 | **Repository reader** | The code is public; assume adversaries read it. | Security depends only on secrets, never on the design being hidden (Kerckhoffs's principle). No credential, key or instance identifier lives in this repository. |
-| **Buggy automation** | Our own code will have bugs. | The failsafe layer sits in firmware/hardware and cannot be overridden by the hub, the user, or any future cloud component. |
+| **Buggy automation** | Our own code will have bugs. | The failsafe layer sits in firmware/hardware and is sovereign **at runtime**: no command from the hub, the user or a future cloud module can suspend it while the device is running. It is not immune to a malicious firmware update — see ADR-0006, which scopes this claim precisely and states what would be required to strengthen it. |
 
 ## What never enters this repository
 
