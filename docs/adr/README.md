@@ -18,9 +18,9 @@ thinking evolved is as valuable as its current state.
 | [0002](0002-mqtt-device-protocol.md) | MQTT as the device-facing protocol | ✅ accepted |
 | [0003](0003-postgres-timescaledb.md) | PostgreSQL + TimescaleDB as the single store | ✅ accepted |
 | [0004](0004-hybrid-hub-first-topology.md) | Hybrid hub-first topology, cloud as a future module | ✅ accepted |
-| [0005](0005-simulators-as-device-strategy.md) | Simulators as the development device strategy | 🚧 to write |
+| [0005](0005-simulators-as-device-strategy.md) | Simulators as the development device strategy | ✅ accepted |
 | [0006](0006-control-authority-hierarchy.md) | Control Authority Hierarchy and auto/manual arbitration | ✅ accepted |
-| [0007](0007-open-source-posture.md) | Open-source posture: public code, private configuration | 🚧 to write |
+| [0007](0007-open-source-posture.md) | Open-source posture: public code, private configuration | ✅ accepted |
 
 ## Writing one
 
