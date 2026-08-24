@@ -80,8 +80,9 @@ Controle manual tem duas naturezas, **nunca confundidas**:
 | 0002 | MQTT como protocolo de dispositivo | Accepted |
 | 0003 | PostgreSQL + TimescaleDB como store único | Accepted |
 | 0004 | Topologia híbrida hub-first, nuvem como módulo futuro | Accepted |
+| 0005 | Simuladores como estratégia de dispositivo de desenvolvimento | Accepted |
 | 0006 | Hierarquia de autoridade de controle e arbitração auto/manual | Accepted |
-| 0005, 0007 | Simuladores como estratégia de dispositivo; postura open-source | 🚧 a escrever |
+| 0007 | Postura open-source: código público, configuração privada | Accepted |
 
 Negativos do ADR-0001 **aceitos conscientemente** — não são bugs a reportar:
 sem isolamento de falha entre módulos, escala acoplada, deploy acoplado,
@@ -97,7 +98,7 @@ materialmente do resto, ou mais de uma pessoa passar a trabalhar no código.
 
 | Ticket | Escopo | Status |
 |---|---|---|
-| SH-001 | Fundação: ADRs, esqueleto modular, ambiente local | 🚧 |
+| SH-001 | Fundação: ADRs, esqueleto modular, ambiente local | ✅ |
 | SH-002 | Device Registry + Shadow (desired/reported/mode) | ⏳ |
 | SH-003 | Pipeline de ingestão de telemetria | ⏳ |
 | SH-004 | Command Dispatcher com ACK e arbitração | ⏳ |
@@ -105,7 +106,13 @@ materialmente do resto, ou mais de uma pessoa passar a trabalhar no código.
 | SH-006 | Módulo de irrigação (primeira fatia vertical) | ⏳ |
 | SH-007 | **TLS no broker MQTT** — listener 8883 com CA local, parar de publicar 1883 | ⏳ 🔒 |
 
-**Ticket atual: SH-001.** Critério de aceite verificável por `make smoke`.
+**SH-001 fechado em 2026-08-24.** Critério de aceite verificado por `make smoke`:
+telemetria publicada no broker chega ao hub (`MQTT message received`) e o
+`/health` responde `ok` com os checks de MQTT e TimescaleDB verdes. Os sete ADRs
+estão aceitos.
+
+**Ticket atual: SH-002** — Device Registry + Shadow. Ver a nota do SH-007 abaixo:
+ele precisa entrar antes de o SH-002 provisionar dispositivo físico.
 
 **SH-007 não obedece à ordem numérica.** O gatilho dele não é uma data nem uma
 métrica, é um evento: **antes do primeiro dispositivo físico entrar na LAN.**
