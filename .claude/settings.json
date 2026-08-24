@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make help)",
+      "Bash(make build)",
+      "Bash(make test)",
+      "Bash(make lint)",
+      "Bash(make tidy)",
+      "Bash(make sec)",
+      "Bash(make smoke)",
+      "Bash(make up)",
+      "Bash(make down)",
+      "Bash(make logs)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+      "Bash(git remote -v)"
+    ]
+  }
+}
